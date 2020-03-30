@@ -1,0 +1,33 @@
+library(e1071)
+data(iris)
+x <- subset(iris, select = -Species)
+y <- iris$Species
+model <- svm(Species ~ ., data = iris)
+pred_result <- predict(model, x)
+table(pred_result,y)
+
+plot(model, iris, Petal.Width ~ Petal.Length,
+     slice = list(Sepal.Width = 3, Sepal.Length = 4),color.palette = terrain.colors)
+
+plot(model, iris, Sepal.Width ~ Petal.Width,
+     slice = list(Sepal.Length = 3, Petal.Length = 4),color.palette = terrain.colors)
+
+
+########################################################################
+ 
+library('MASS')
+data(cats)
+library('e1071')
+
+SVM_RBF_Model <- svm(Sex~., data = cats)
+windows()
+plot(SVM_RBF_Model,data=cats,color.palette = topo.colors)
+
+SVM_Linear_Model <- svm(Sex~., data = cats,kernel="linear")
+plot(SVM_Linear_Model,data=cats,color.palette = topo.colors)
+
+obj <- tune.svm(Sex~., data = cats, sampling = "fix", gamma = 2^c(-8,-4,0,4), cost = 2^c(-8,-4,-2,0))
+plot(obj, transform.x = log2, transform.y = log2)
+plot(obj, type = "perspective", theta = 120, phi = 45)
+
+obj
