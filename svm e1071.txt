@@ -1,0 +1,32 @@
+library(e1071)
+
+plot(iris)
+
+plot(iris$Sepal.Length, iris$Sepal.Width, 
+     col=iris$Sepal.Width)
+
+plot(iris$Petal.Length, iris$Petal.Width,
+     col=iris$Species)
+
+#use PL PW as the features for the SVM model
+
+s<-sample(150,100)
+col=c("Petal.Length","Petal.Width","Species")
+iris_train=iris[s,col]
+iris_test=iris[-s,col]
+#remove other features execept for PL and PW
+
+svmfit=svm(Species~.,data=iris_train,
+           kernel = "linear", cost =100,
+           scale = F)
+print(svmfit)
+plot(svmfit,iris_train[,col])
+
+tuned=tune(svm,Species~.,data = iris_train,
+           kernel = "linear",ranges = list(cost=c(0.001,0.01,0.1,1,10,100)))
+summary(tuned)
+
+p=predict(svmfit,iris_test,type="class")
+plot(p)
+table(p,iris_test$Species)
+mean(p==iris_test$Species)

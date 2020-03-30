@@ -1,0 +1,54 @@
+library("mlbench")
+library("e1071")
+
+data(Glass, package="mlbench")
+data = Glass
+
+smp.size = floor(0.8*nrow(data))  #floor 無條件捨去 
+set.seed(516)                     
+train.ind = sample(seq_len(nrow(data)), smp.size)
+train = data[train.ind, ] # 80%
+test = data[-train.ind, ] # 20%
+
+model = svm(formula = Type ~ .,  # 依變數(在這裡是Type)的資料形態要是Factor
+            data = train)
+
+# 可以看到SVM預設的參數設定
+summary(model)
+
+
+##################################################################################
+
+#SVR
+
+data = data.frame(x=1:20,
+                  y=c(3,4,8,2,6,10,12,13,15,14,17,18,20,17,21,22,25,30,29,31))
+
+# 資料的原始值
+plot(data$x, data$y, pch=16, xlab="X", ylab="Y")
+
+model <- lm(y ~ x , data) 
+
+# lm預測
+lm.pred = predict(model, data)
+
+# 資料的原始值(黑點)
+plot(data$x, data$y, pch=16, xlab="X", ylab="Y")
+# lm的預測值(紅三角形)
+points(lm.pred, pch=2, col="red")
+abline(model, col="red")
+
+
+
+#########################################################################
+
+library("mlbench")
+data(Glass, package="mlbench")
+data = Glass
+
+# 記錄每一次提高C時，對應的support vectors數量
+num.SV = sapply(X=1:1000, 
+                FUN=function(C) svm(Type~., data, cost=C, epsilon =.1)$tot.nSV)
+
+# 隨著C越大，support vectors數量越少，代表margin的範圍越窄，越接近hard-margin SVM，越容易overfitting
+plot(x=1:1000, y=num.SV, xlab="C value", ylab="# of support vectors", pch=16, cex=.5, main="# of SVs in soft-margin SVM")

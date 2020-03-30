@@ -1,0 +1,23 @@
+#Random Forest
+
+library(randomForest)
+
+data("iris")
+s<-sample(150,100)
+iris_train=iris[s,]
+iris_test=iris[-s,]
+
+rfm=randomForest(Species~.,
+                 iris_train)
+
+pred=predict(rfm,iris_test)
+
+table(iris_test$Species,pred)
+
+mean(iris_test$Species==pred) #accuracy
+
+importance(rfm)  
+
+getTree(rfm,500,labelVar = T)  #recall
+
+##############################################################
